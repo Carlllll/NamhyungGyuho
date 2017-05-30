@@ -671,16 +671,11 @@ def Test_method(input):
 
 
 def Test_All():
-    Test_method("(+ 1 2 )")
-    Test_method("(- ( + 1 2 ) 4 )")
-    Test_method("(* 3 2 )")
-    Test_method("(/ 10 2 )")
-    Test_method("(< 1 5 )")
-    Test_method("(= 3 ( + 1 2 ) )")
-    Test_method("(> 1 5 )")
-    Test_method("(not #F )")
-    Test_method("(null? '( 1 2 3) )")
-    Test_method("(cond (#F 1) ( #T 2 ) )")
-    Test_method("(cond ( ( null? ' ( 1 2 3 ) ) 1 ) ( ( > 100 10 ) 2 ) ( #T 3 ) )")
+    while True:
+        input = raw_input("Input : ")
+        if input == "exit":
+            break
+        else:
+            Test_method(input)
 
 Test_All()
