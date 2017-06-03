@@ -2,6 +2,8 @@
 from string import letters, digits, whitespace
 
 define_add = dict()
+global parameter
+
 class CuteType:
     INT = 1
     ID = 4
@@ -356,6 +358,11 @@ def run_func(op_code_node):
     """
     :type op_code_node:Node/
     """
+    if op_code_node.type is TokenType.LIST:
+        parameter = op_code_node.next.value
+        op_code_node = op_code_node.value
+
+
     def quote(node):
         return node
 
@@ -531,6 +538,13 @@ def run_func(op_code_node):
 
         insertDefine(l_node.value, r_node)
 
+    def lam(node):
+
+        param = Node(TokenType.INT, parameter)
+        insertDefine(op_code_node.next.value.value, param)
+        return run_list(node.value.value.next.next)
+
+
     def create_new_quote_list(value_node, list_flag=False):
         """
         :type value_node: Node
@@ -569,6 +583,7 @@ def run_func(op_code_node):
     table['='] = eq
     table['cond'] = cond
     table['define'] = define
+    table['lambda'] = lam
 
     return table[op_code_node.value]
 
