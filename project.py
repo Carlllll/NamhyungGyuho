@@ -455,7 +455,7 @@ def run_func(op_code_node):
         new_l_node = strip_quote(run_expr(l_node))
         if new_l_node.type is TokenType.TRUE:
             return l_node.next
-        else: 
+        else:
             return run_cond(node.next)
 
     def not_op(node):
@@ -667,12 +667,13 @@ def Test_method(input):
     test_basic_paser = BasicPaser(test_tokens)
     node = test_basic_paser.parse_expr()
     cute_inter = run_expr(node)
-    print print_node(cute_inter)
+
+    print "…", print_node(cute_inter)
 
 
 def Test_All():
     while True:
-        input = raw_input("Input : ")
+        input = raw_input("> ")
         if input == "exit":
             break
         else:
