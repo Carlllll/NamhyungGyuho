@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from string import letters, digits, whitespace
 
-
+define_add = dict()
 class CuteType:
     INT = 1
     ID = 4
@@ -99,7 +99,6 @@ class Token(object):
 
 
 class Scanner:
-
     def __init__(self, source_string=None):
         """
         :type self.__source_string: str
@@ -347,6 +346,7 @@ class BasicPaser(object):
 
 
 def run_list(root_node):
+
     """
     :type root_node: Node
     """
@@ -356,6 +356,7 @@ def run_list(root_node):
 
 
 def run_func(op_code_node):
+
     """
     :type op_code_node:Node/
     """
@@ -528,6 +529,17 @@ def run_func(op_code_node):
         else:
             return Node(TokenType.FALSE)
 
+    def define(node):
+        l_node = node.value.next
+        r_node = node.value.next.next
+        new_l_node = strip_quote(run_expr(l_node))
+        new_r_node = strip_quote(run_expr(r_node))
+
+        intNode = Node(TokenType.INT, new_r_node.value)
+
+        define_add[new_l_node.value] = intNode
+
+
     def create_new_quote_list(value_node, list_flag=False):
         """
         :type value_node: Node
@@ -565,9 +577,21 @@ def run_func(op_code_node):
     table['>'] = gt
     table['='] = eq
     table['cond'] = cond
+    table['define'] = define
 
     return table[op_code_node.value]
 
+def lookupDefine(id):
+
+    temp = define_add[id]
+    if temp is not None:
+        if temp.type is TokenType.INT:
+            return temp
+        elif temp.type is TokenType.QUOTE:
+            return temp
+        elif temp.type is TokenType.LIST:
+            return temp
+    return None
 
 def run_expr(root_node):
     """
@@ -577,6 +601,8 @@ def run_expr(root_node):
         return None
 
     if root_node.type is TokenType.ID:
+        if root_node.value in define_add:
+            return lookupDefine(root_node.value)
         return root_node
     elif root_node.type is TokenType.INT:
         return root_node
@@ -667,8 +693,10 @@ def Test_method(input):
     test_basic_paser = BasicPaser(test_tokens)
     node = test_basic_paser.parse_expr()
     cute_inter = run_expr(node)
-
-    print "…", print_node(cute_inter)
+    if cute_inter is None:
+        print_node(cute_inter)
+    else:
+        print "…", print_node(cute_inter)
 
 
 def Test_All():
