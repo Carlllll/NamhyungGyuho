@@ -359,7 +359,9 @@ def run_func(op_code_node):
     :type op_code_node:Node/
     """
     if op_code_node.type is TokenType.LIST:
-        parameter = op_code_node.next.value
+        parameter = op_code_node.next
+        if op_code_node.next.type is not TokenType.INT:
+            parameter = lookupDefine(op_code_node.next.value)
         op_code_node = op_code_node.value
 
 
@@ -540,8 +542,7 @@ def run_func(op_code_node):
 
     def lam(node):
 
-        param = Node(TokenType.INT, parameter)
-        insertDefine(op_code_node.next.value.value, param)
+        insertDefine(op_code_node.next.value.value, parameter)
         return run_list(node.value.value.next.next)
 
 
