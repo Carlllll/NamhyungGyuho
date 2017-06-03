@@ -190,21 +190,17 @@ class CuteScanner(object):
         self.transM[(0, '+')] = 3
         self.transM[(0, '(')] = 5
         self.transM[(0, ')')] = 6
-
         self.transM[(0, '#')] = 7
         self.transM[(7, 'T')] = 8
         self.transM[(7, 'F')] = 9
-
         self.transM[(0, '/')] = 11
         self.transM[(0, '*')] = 10
-
         self.transM[(0, '<')] = 12
         self.transM[(0, '>')] = 13
         self.transM[(0, '=')] = 14
         self.transM[(0, "'")] = 15
 
     def tokenize(self):
-
         def build_token(type, lexeme): return Token(type, lexeme)
         cute_scanner = Scanner(self.source)
         return cute_scanner.scan(self.transM, build_token)
