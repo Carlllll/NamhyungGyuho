@@ -532,13 +532,8 @@ def run_func(op_code_node):
     def define(node):
         l_node = node.value.next
         r_node = node.value.next.next
-        new_l_node = strip_quote(run_expr(l_node))
-        new_r_node = strip_quote(run_expr(r_node))
 
-        intNode = Node(TokenType.INT, new_r_node.value)
-
-        define_add[new_l_node.value] = intNode
-
+        insertDefine(l_node.value, r_node)
 
     def create_new_quote_list(value_node, list_flag=False):
         """
@@ -580,6 +575,16 @@ def run_func(op_code_node):
     table['define'] = define
 
     return table[op_code_node.value]
+
+def insertDefine(id, value):
+    if value.type is TokenType.INT:
+        intNode = Node(TokenType.INT, value.value)
+        define_add[id] = intNode
+    elif value.type is TokenType.QUOTE:
+        define_add[id] = value
+    elif value.type is TokenType.LIST:
+        new_value = run_expr(value)
+        define_add[id] = new_value
 
 def lookupDefine(id):
 
