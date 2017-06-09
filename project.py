@@ -2,6 +2,7 @@
 from string import letters, digits, whitespace
 
 define_add = dict()
+tmpdefine = dict()
 
 global parameter
 
@@ -569,6 +570,7 @@ def run_func(op_code_node):
         insertDefine(l_node.value, r_node)
 
     def lam(node):
+        backupDefine()
 
         if node.next is None:
             return node
@@ -589,6 +591,7 @@ def run_func(op_code_node):
                 node = node.next
             else:
                 break
+        loadDefine()
 
         return result
 
@@ -663,6 +666,12 @@ def lookupDefine(id):
         else:
             print None;
     return None
+
+def backupDefine():
+    tmpdefine = define_add.copy()
+
+def loadDefine():
+    define_add = tmpdefine
 
 def run_expr(root_node):
     """
