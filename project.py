@@ -2,6 +2,7 @@
 from string import letters, digits, whitespace
 
 define_add = dict()
+
 global parameter
 
 class CuteType:
@@ -350,6 +351,14 @@ def run_list(root_node):
     """
     op_code_node = root_node.value
 
+    if op_code_node.type is TokenType.ID:
+        op_code_node = lookupDefine(op_code_node.value)
+        op_code_node.next = root_node.value.next
+        root_node = op_code_node
+
+    if op_code_node.type is TokenType.LIST:
+        return run_list(op_code_node)
+
     return run_func(op_code_node)(root_node)
 
 
@@ -359,18 +368,19 @@ def run_func(op_code_node):
     :type op_code_node:Node/
     """
 
-    if op_code_node.type is TokenType.ID:
-        parameter = op_code_node.next
-        insertDefine("x", parameter)
-        return run_list(lookupDefine(op_code_node.value))
+    # if op_code_node.type is TokenType.ID:
+    #     parameter = op_code_node.next
+    #     insertDefine("x", parameter)
+    #     return run_list(lookupDefine(op_code_node.value))
+    #
+    # if op_code_node.type is TokenType.LIST:
+    #     parameter = op_code_node
+    #     while op_code_node.value.next.value:
+    #         parameter = parameter.next
+    #         insertDefine(op_code_node.value.next.value.value, parameter)
+    #         op_code_node.value.next.value = op_code_node.value.next.value.next
+    #     op_code_node = op_code_node.value
 
-    if op_code_node.type is TokenType.LIST:
-        parameter = op_code_node
-        while op_code_node.value.next.value:
-            parameter = parameter.next
-            insertDefine(op_code_node.value.next.value.value, parameter)
-            op_code_node.value.next.value = op_code_node.value.next.value.next
-        op_code_node = op_code_node.value
 
     # print op_code_node.next.next
     # if op_code_node.next.value:
@@ -474,7 +484,7 @@ def run_func(op_code_node):
         l_node = node.value
         new_l_node = strip_quote(run_expr(l_node))
         if new_l_node.type is TokenType.TRUE:
-            return l_node.next
+            return run_expr(l_node.next)
         else:
             return run_cond(node.next)
 
@@ -552,13 +562,36 @@ def run_func(op_code_node):
         l_node = node.value.next
         r_node = node.value.next.next
 
-        if r_node.type is TokenType.LIST:
-            r_node = r_node.value.next.next
-
+        if r_node.type is TokenType.ID:
+            r_node = lookupDefine(r_node.value)
+        else:
+            r_node = run_expr(r_node)
         insertDefine(l_node.value, r_node)
 
     def lam(node):
-        return run_list(node.value.value.next.next)
+
+        if node.next is None:
+            return node
+
+        if node.type is TokenType.LIST:
+            parameter = node
+            while node.value.next.value:
+                parameter = parameter.next
+                insertDefine(node.value.next.value.value, run_expr(parameter))
+                if node.value.next.value.next is None:
+                    break
+                node.value.next.value = node.value.next.value.next
+            node = node.value
+        result = run_expr(node.next.next)
+        while True:
+            if node.next.next.next is not None:
+                result = run_expr(node.next.next.next)
+                node = node.next
+            else:
+                break
+
+        return result
+
 
 
     def create_new_quote_list(value_node, list_flag=False):
@@ -627,6 +660,8 @@ def lookupDefine(id):
             return temp
         elif temp.type is TokenType.LIST:
             return temp
+        else:
+            print None;
     return None
 
 def run_expr(root_node):
